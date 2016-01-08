@@ -1,0 +1,7 @@
+base   social
+author Michal Červňák
+email  miso@fykos.cz
+date   2016-01-08
+name   Social Plugin
+desc   Plugin for social network 
+url    https://github.com/fykosak/dokuwiki-plugin-social.git
