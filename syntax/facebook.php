@@ -37,10 +37,10 @@ class syntax_plugin_social_facebook extends DokuWiki_Syntax_Plugin {
      */
     public function handle($match,$state,$pos,Doku_Handler &$handler) {
 
-        
+
         $params = $this->helper->facebook->ParseMatch($match);
 
-      
+
 
 
         return array($state,$params);
@@ -52,12 +52,7 @@ class syntax_plugin_social_facebook extends DokuWiki_Syntax_Plugin {
             /** @var Do ku_Renderer_xhtml $renderer */
             list($state,$param) = $data;
 
-
-            $renderer->doc .= '<div style="float:right; margin:1em;clear:both" class="fb-'.$param['class'].'" data-href="'.htmlspecialchars($param['href']).'"';
-            if($param['width']){
-                $renderer->doc .=' data-width="'.$param['width'].'" ';
-            }
-            $renderer->doc .= '></div>';
+            $renderer->doc.= $this->helper->facebook->CreatePost($param['href'],$param['width']);
         }
         return false;
     }
