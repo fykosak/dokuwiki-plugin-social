@@ -29,7 +29,7 @@ class syntax_plugin_social_facebook extends DokuWiki_Syntax_Plugin {
     }
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\{\{FB-.+?>.+?\}\}',$mode,'plugin_social_facebook');
+        $this->Lexer->addSpecialPattern('\{\{FB-.+?>.*?\}\}',$mode,'plugin_social_facebook');
     }
 
     /**
@@ -48,11 +48,37 @@ class syntax_plugin_social_facebook extends DokuWiki_Syntax_Plugin {
 
     public function render($mode,Doku_Renderer &$renderer,$data) {
         // $data is what the function handle return'ed.
+        global $ID;
         if($mode == 'xhtml'){
             /** @var Do ku_Renderer_xhtml $renderer */
             list($state,$param) = $data;
 
-            $renderer->doc.= $this->helper->facebook->{'Create'.$param['class']}($param['href'],$param['width']);
+            switch ( $param['class']){
+                case "post":
+                    
+                    $renderer->doc.= $this->helper->facebook->CreatePost($param['href'],$param['width']);
+                    break;
+                case "send":
+                   $href=  ($param['href']=='')?wl($ID,null,true):wl($param['href']);
+                    $renderer->doc.= $this->helper->facebook->CreateSend($href);
+                    break;
+                case "like":
+                    $href=  ($param['href']=='')?wl($ID,null,true):wl($param['href']);
+                    $renderer->doc.= $this->helper->facebook->CreateLike($href);
+                    break;
+                case "share":
+                     $href=  ($param['href']=='')?wl($ID,null,true):wl($param['href']);
+                    $renderer->doc.= $this->helper->facebook->CreateShare($href);
+                    break;
+                case "page":
+                  //  $renderer->doc.= $this->helper->facebook->{'Create'.$param['class']}($param['href'],$param['width']);
+                     msg('not implement');
+                    break;
+                default :
+                msg('No match');
+            }
+
+            
         }
         return false;
     }
