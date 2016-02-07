@@ -1,17 +1,16 @@
 <?php
 
 /**
- * Description of sction
+ * Description of action
  *
  * @author Miso <miso@fykos.cz>
  */
 class helper_plugin_social_facebook extends DokuWiki_Plugin {
 
-    //put your code here
 
 
     public function __construct() {
-        ;
+        
     }
 
     public function ParseMatch($match) {

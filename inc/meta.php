@@ -21,6 +21,8 @@ class helper_plugin_social_meta extends DokuWiki_Plugin {
         $text = "";
         $data['FB']['description'] = $text;
         $data['FB']['site_name'] = "FYKOS";
+       
+        //var_dump(p_get_metadata($ID,'relation'));
         $data['FB']['image'] = ml($this->getConf('default_image'),array('w' => 600,'h' => 600),true,'&',true);
         $data['FB']['type'] = "website";
         $data['FB']['locale'] = 'cs_CZ';
@@ -30,15 +32,16 @@ class helper_plugin_social_meta extends DokuWiki_Plugin {
     }
 
     public function Render($meta,Doku_Event &$event) {
-
-
-        $this->RenderFB($meta['FB'],$event);
+        $default = $this->CreateDefault();
+        
+        $this->RenderFB($meta['FB'],$event,$default['FB']);
     }
 
-    private function RenderFB($data,Doku_Event &$event) {
-        foreach (self::$FBmeta as $meta) {
+    private function RenderFB($data,Doku_Event &$event,$default = array()) {
 
-            $event->data['meta'][] = array('property' => 'og:'.$meta,'content' => $data[$meta]);
+        foreach (self::$FBmeta as $meta) {
+            $v = $data[$meta] ? $data[$meta] : $default[$meta];
+            $event->data['meta'][] = array('property' => 'og:'.$meta,'content' => $v);
         }
     }
 

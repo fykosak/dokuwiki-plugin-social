@@ -52,7 +52,7 @@ class syntax_plugin_social_facebook extends DokuWiki_Syntax_Plugin {
             /** @var Do ku_Renderer_xhtml $renderer */
             list($state,$param) = $data;
 
-            $renderer->doc.= $this->helper->facebook->CreatePost($param['href'],$param['width']);
+            $renderer->doc.= $this->helper->facebook->{'Create'.$param['class']}($param['href'],$param['width']);
         }
         return false;
     }
