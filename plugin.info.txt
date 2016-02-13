@@ -1,5 +1,5 @@
 base   social
-author Michal Červňák
+author Michal Červeňák
 email  miso@fykos.cz
 date   2016-01-08
 name   Social Plugin
