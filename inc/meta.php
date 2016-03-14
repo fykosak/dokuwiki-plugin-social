@@ -7,42 +7,53 @@
  */
 class helper_plugin_social_meta extends DokuWiki_Plugin {
 
-    public static $FBmeta = array('url','title','description','site_name','image','type','locale');
+    private $metadata;
+    public $helper;
+    public static $FBmeta = array(/* 'url', */'title','description','site_name','image','type','locale');
+    public static $metaKeys = array('og' => array('url','title','description','site_name','image','type','locale'));
+    public static $metaEditableKeys =array('og' => array('title','description','site_name','image','type','locale'));
 
     public function __construct() {
-        
+
+        $this->metadata = array();
     }
 
-    public function CreateDefault() {
+    public function ReadMetaStorage() {
+        return $this->metadata;
+    }
+
+    public function AddMetaData($type,$key,$value) {
+        $name = $this->getMetaPropertyName($type,$key);
+        $this->metadata[$name] = $value;
+        return true;
+    }
+
+    public function CanSaveMeta() {
         global $ID;
-        $data = array();
-        $data['FB']['url'] = wl($ID,null,true);
-        $data['FB']['title'] = p_get_first_heading($ID);
-        $text = "";
-        $data['FB']['description'] = $text;
-        $data['FB']['site_name'] = "FYKOS";
-       
-        //var_dump(p_get_metadata($ID,'relation'));
-        $data['FB']['image'] = ml($this->getConf('default_image'),array('w' => 600,'h' => 600),true,'&',true);
-        $data['FB']['type'] = "website";
-        $data['FB']['locale'] = 'cs_CZ';
-
-
-        return $data;
+        return (auth_quickaclcheck($ID) >= AUTH_EDIT);
     }
 
-    public function Render($meta,Doku_Event &$event) {
-        $default = $this->CreateDefault();
-        
-        $this->RenderFB($meta['FB'],$event,$default['FB']);
+    public function GetMetaFile() {
+        global $ID;
+        return metaFN($ID,'.meta.social');
     }
 
-    private function RenderFB($data,Doku_Event &$event,$default = array()) {
+    public function GetMetaData() {
+        $metafile = $this->GetMetaFile();
+        $metadata = $this->ReadMeta($metafile);
 
-        foreach (self::$FBmeta as $meta) {
-            $v = $data[$meta] ? $data[$meta] : $default[$meta];
-            $event->data['meta'][] = array('property' => 'og:'.$meta,'content' => $v);
-        }
+        return (array) $metadata;
+    }
+
+    public function ReadMeta($metafile) {
+        $c = io_readFile($metafile);
+        $metadata = (array) json_decode($c);
+
+        return $metadata;
+    }
+
+    public function getMetaPropertyName($type,$value) {
+        return $type.':'.$value;
     }
 
 }

@@ -74,6 +74,16 @@ class syntax_plugin_social_facebook extends DokuWiki_Syntax_Plugin {
                   //  $renderer->doc.= $this->helper->facebook->{'Create'.$param['class']}($param['href'],$param['width']);
                      msg('not implement');
                     break;
+                
+                case "wrap":
+                    $href=  ($param['href']=='')?wl($ID,null,true):wl($param['href']);
+                    $renderer->doc.='<div class="plugin_social_fb_wrap">';
+                    $renderer->doc.= $this->helper->facebook->CreateLike($href,null,"button");
+                    $renderer->doc.= $this->helper->facebook->CreateShare($href);
+                    $renderer->doc.= $this->helper->facebook->CreateSend($href);
+                    $renderer->doc.='</div>';
+                    break;
+                
                 default :
                 msg('No match');
             }
