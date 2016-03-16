@@ -19,12 +19,16 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         $controller->register_hook('TPL_ACT_UNKNOWN','BEFORE',$this,'tplMetaDataForm');
         $controller->register_hook('TPL_ACT_RENDER','BEFORE',$this,'tplMetaDataButton');
         $controller->register_hook('ACTION_ACT_PREPROCESS','BEFORE',$this,'ActPreprocessMeta');
-        //$controller-
     }
 
+    /**
+     * 
+     * @param Doku_Event $event
+     * @return type
+     */
     public function ActPreprocessMeta(Doku_Event &$event) {
         $act = $event->data;
-       
+
         if(!$this->helper->meta->CanSaveMeta()){
             return;
         }
@@ -42,7 +46,10 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
 
     public function tplMetaDataButton(Doku_Event &$event) {
         global $ID;
-       
+        if($event->data != 'show'){
+            return;
+        }
+
         if($this->helper->meta->CanSaveMeta()){
 
             $form = new Doku_Form(array());
@@ -56,10 +63,8 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         }
     }
 
-   
-
     public function tplMetaDataForm(Doku_Event &$event) {
-    
+
         global $ID;
         echo '<div class="plugin_social">';
         echo '<div class="form" id="pluginsocialform" >';
@@ -71,19 +76,30 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
             $form->addElement('<div>');
             $form->startFieldset($type);
             foreach ($values as $value) {
+             /*
+                if($value == 'image'){
+
+                    echo'<div class="social_media_manager">';
+                    tpl_media();
+
+                
+                    echo '</div>';
+                }*/
                 $metadata = $this->helper->meta->getMetaData();
                 $name = $this->helper->meta->getMetaPropertyName($type,$value);
-                $form->addElement(form_makeTextField($name,$metadata[$name],$type.':'.$value,null,'block'));
+                $form->addElement(form_makeTextField($name,$metadata[$name],$name,null,'block'));
             }
             $form->endFieldset();
 
             $form->addElement('</div>');
         }
 
-        $form->addElement(form_makeButton('submit',null,$this->getLang('send').'SEND'));
+        $form->addElement(form_makeButton('submit',null,$this->getLang('btnSave')));
         html_form('',$form);
         echo '</div>';
         echo '</div>';
+
+
         $event->preventDefault();
     }
 
