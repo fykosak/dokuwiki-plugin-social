@@ -17,8 +17,9 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
 
         $controller->register_hook('TPL_METAHEADER_OUTPUT','BEFORE',$this,'RenderMeta');
         $controller->register_hook('TPL_ACT_UNKNOWN','BEFORE',$this,'tplMetaDataForm');
-        $controller->register_hook('TPL_ACT_RENDER','BEFORE',$this,'tplMetaDataButton');
+        //$controller->register_hook('TPL_ACT_RENDER','BEFORE',$this,'tplMetaDataButton');
         $controller->register_hook('ACTION_ACT_PREPROCESS','BEFORE',$this,'ActPreprocessMeta');
+        $controller->register_hook('TEMPLATE_PAGETOOLS_DISPLAY','BEFORE',$this,'tplMetaDataMenuButton');
     }
 
     /**
@@ -40,11 +41,25 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
                 break;
             default: return;
         }
+        
         $event->preventDefault();
         $event->stopPropagation();
     }
 
-    public function tplMetaDataButton(Doku_Event &$event) {
+    public function tplMetaDataMenuButton(Doku_Event &$event,$param) {
+
+        global $ID;
+        if($this->helper->meta->CanSaveMeta()){
+            $event->data['items']['social_form'] = '<li class="plugin_social" >
+                    <a href="'.wl($ID,array('do' => 'social_form')).'" >
+                    '.$this->getLang('Plugin_social').'Plugin_social'.
+                    '</a>
+                    </li>';
+        }
+    }
+
+    public function tplMetaDataButton(Doku_Event &$event,$param) {
+
         global $ID;
         if($event->data != 'show'){
             return;
@@ -52,11 +67,14 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
 
         if($this->helper->meta->CanSaveMeta()){
 
+            echo '<div class="plugin_social">';
+            echo '<img src="/lib/plugins/social/images/social_logo.png">';
             $form = new Doku_Form(array());
             $form->addHidden('id',$ID);
             $form->addHidden('do','social_form');
             $form->addElement(form_makeButton('submit',null,$this->getLang('Plugin_social').'Plugin_social'));
             html_form('',$form);
+            echo '</div>';
         }else{
 
             return;
@@ -64,7 +82,10 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
     }
 
     public function tplMetaDataForm(Doku_Event &$event) {
-
+      
+        if($event->data !='social_form'){
+            return ;
+        }
         global $ID;
         echo '<div class="plugin_social">';
         echo '<div class="form" id="pluginsocialform" >';
@@ -76,15 +97,15 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
             $form->addElement('<div>');
             $form->startFieldset($type);
             foreach ($values as $value) {
-             /*
-                if($value == 'image'){
+                /*
+                  if($value == 'image'){
 
-                    echo'<div class="social_media_manager">';
-                    tpl_media();
+                  echo'<div class="social_media_manager">';
+                  tpl_media();
 
-                
-                    echo '</div>';
-                }*/
+
+                  echo '</div>';
+                  } */
                 $metadata = $this->helper->meta->getMetaData();
                 $name = $this->helper->meta->getMetaPropertyName($type,$value);
                 $form->addElement(form_makeTextField($name,$metadata[$name],$name,null,'block'));
@@ -102,6 +123,7 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
 
         $event->preventDefault();
     }
+    
 
     public function SaveMeta($event) {
         global $INPUT;
@@ -132,6 +154,7 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
     }
 
     public function RenderMeta(Doku_Event &$event) {
+       
 
         $metadata = $this->helper->meta->getMetaData();
         $storemetadata = $this->helper->meta->ReadMetaStorage();

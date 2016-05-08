@@ -17,4 +17,41 @@ and open the template in the editor.
 
 
 }
+.plugin_social {
+    &>*{
+        vertical-align: middle;
+        display: inline-block;
+    }
+    img,img.logo{
+        height: 30px;
+
+    }
+    button{
+        background-image: none;
+        background-color: transparent;
+        border: none;
+        color: @ini_text_alt;
+
+
+
+    }
+}
+@whatsapp_color : #65bc54;
+.plugin_social{
+    &.social_button{
+        &.whatsapp-share{
+            background-image: url(images/whatsapp.svg);           
+            background-color: @whatsapp_color;
+            padding-left: 1.75em;
+            border-radius: 2px;
+            padding-right: .25em;
+            background-repeat: no-repeat;
+            display: inline-block;
+            text-shadow: 0px -1px dareken(@whatsapp_color,20%);
+            color: white;
+        }
+
+    }
+
+}
 
