@@ -9,7 +9,7 @@ class helper_plugin_social_meta extends DokuWiki_Plugin {
 
     private $metadata;
     public $helper;
-    public static $FBmeta = array(/* 'url', */'title','description','site_name','image','type','locale');
+    public static $FBmeta = array(/* 'url','locale', */'title','description','site_name','image','type');
     public static $metaKeys = array('og' => array('url','title','description','site_name','image','type','locale'));
     public static $metaEditableKeys =array('og' => array('title','description','site_name','image','type','locale'));
 

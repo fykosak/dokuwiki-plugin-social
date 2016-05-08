@@ -97,15 +97,7 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
             $form->addElement('<div>');
             $form->startFieldset($type);
             foreach ($values as $value) {
-                /*
-                  if($value == 'image'){
-
-                  echo'<div class="social_media_manager">';
-                  tpl_media();
-
-
-                  echo '</div>';
-                  } */
+  
                 $metadata = $this->helper->meta->getMetaData();
                 $name = $this->helper->meta->getMetaPropertyName($type,$value);
                 $form->addElement(form_makeTextField($name,$metadata[$name],$name,null,'block'));
@@ -154,8 +146,7 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
     }
 
     public function RenderMeta(Doku_Event &$event) {
-       
-
+        global $ID;
         $metadata = $this->helper->meta->getMetaData();
         $storemetadata = $this->helper->meta->ReadMetaStorage();
 
@@ -169,10 +160,30 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
                 }
 
                 if($metadata[$name] != null){
+                    if($name=='og:image'){
+                        $metadata[$name]=ml($metadata[$name],null,true,'&',true);
+                    }
                     $event->data['meta'][] = array('property' => $name,'content' => $metadata[$name]);
                     continue;
                 }
-                $event->data['meta'][] = array('property' => $name,'content' => $this->getConf($name));
+                switch ($name) {
+                    case 'og:url':
+                        $event->data['meta'][] = array('property' => $name,'content' => wl($ID,null,true,'&'));
+                        break;
+                    case 'og:title':
+                        $event->data['meta'][] = array('property' => $name,'content' => p_get_first_heading($ID));
+                        break;
+                    case 'og:site_name':
+                        $event->data['meta'][] = array('property' => $name,'content' => 'FYKOS');
+                        break;
+                  
+                    case 'og:type':
+                        $event->data['meta'][] = array('property' => $name,'content' => 'website');
+                        break;
+                    default :
+                        //$event->data['meta'][] = array('property' => $name,'content' => $this->getConf($name));
+                        break;
+                }
             }
         }
     }
