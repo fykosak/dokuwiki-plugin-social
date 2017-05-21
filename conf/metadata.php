@@ -1,5 +1,4 @@
 <?php
 
-$meta['default_image']=array('string');
-$meta['default_text']=array();
-
+$meta['default_image'] = ['string'];
+$meta['default_text'] = [];

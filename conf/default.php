@@ -1,5 +1,4 @@
 <?php
 
-$conf['default_image']="";
-$conf['default_text']="";
-
+$conf['default_image'] = "";
+$conf['default_text'] = "";

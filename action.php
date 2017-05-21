@@ -6,7 +6,9 @@
  * @author Miso <miso@fykos.cz>
  */
 class action_plugin_social extends DokuWiki_Action_Plugin {
-
+    /**
+     * @var helper_plugin_social
+     */
     private $helper;
 
     public function __construct() {
@@ -15,177 +17,161 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
 
     public function register(Doku_Event_Handler $controller) {
 
-        $controller->register_hook('TPL_METAHEADER_OUTPUT','BEFORE',$this,'RenderMeta');
-        $controller->register_hook('TPL_ACT_UNKNOWN','BEFORE',$this,'tplMetaDataForm');
+        $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'renderMeta');
+        $controller->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'tplMetaDataForm');
         //$controller->register_hook('TPL_ACT_RENDER','BEFORE',$this,'tplMetaDataButton');
-        $controller->register_hook('ACTION_ACT_PREPROCESS','BEFORE',$this,'ActPreprocessMeta');
-        $controller->register_hook('TEMPLATE_PAGETOOLS_DISPLAY','BEFORE',$this,'tplMetaDataMenuButton');
+        $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'actPreprocessMeta');
+        $controller->register_hook('TEMPLATE_PAGETOOLS_DISPLAY', 'BEFORE', $this, 'tplMetaDataMenuButton');
     }
 
-    /**
-     * 
-     * @param Doku_Event $event
-     * @return type
-     */
-    public function ActPreprocessMeta(Doku_Event &$event) {
+    public function actPreprocessMeta(Doku_Event &$event) {
+        global $INPUT;
         $act = $event->data;
 
-        if(!$this->helper->meta->CanSaveMeta()){
+        if (!$this->helper->meta->canSaveMeta()) {
             return;
         }
-        switch ($act) {
-            case 'social_form':
-                break;
-            case 'social_save':
-                $this->SaveMeta($event);
-                break;
-            default: return;
+        if ($act !== 'social') {
+            return;
         }
-        
         $event->preventDefault();
         $event->stopPropagation();
-    }
 
-    public function tplMetaDataMenuButton(Doku_Event &$event,$param) {
-
-        global $ID;
-        if($this->helper->meta->CanSaveMeta()){
-            $event->data['items']['social_form'] = '<li class="plugin_social" >
-                    <a href="'.wl($ID,array('do' => 'social_form')).'" >
-                    '.$this->getLang('Plugin_social').'Plugin_social'.
-                    '</a>
-                    </li>';
+        switch ($INPUT->param('social')['do']) {
+            case 'save':
+                $this->saveMeta($event);
+                break;
+            case 'edit':
+            default:
+                return;
         }
     }
 
-    public function tplMetaDataButton(Doku_Event &$event,$param) {
+    public function tplMetaDataMenuButton(Doku_Event &$event) {
+        global $ID;
+        if ($this->helper->meta->canSaveMeta()) {
+            $event->data['items']['social_form'] = '<a class="dropdown-item" href="' .
+                wl($ID, ['do' => 'social', 'social[do]' => 'edit']) . '" >
+                    ' . $this->getLang('Plugin_social') . 'Plugin_social' . '</a>';
+        }
+    }
+
+    /*public function tplMetaDataButton(Doku_Event &$event, $param) {
 
         global $ID;
-        if($event->data != 'show'){
+        if ($event->data != 'show') {
             return;
         }
 
-        if($this->helper->meta->CanSaveMeta()){
-
-            echo '<div class="plugin_social">';
-            echo '<img src="/lib/plugins/social/images/social_logo.png">';
+        if ($this->helper->meta->canSaveMeta()) {
+            $html = '';
+            $html .= '<div class="plugin_social">';
+            $html .= '<img src="/lib/plugins/social/images/social_logo.png" />';
             $form = new Doku_Form(array());
-            $form->addHidden('id',$ID);
-            $form->addHidden('do','social_form');
-            $form->addElement(form_makeButton('submit',null,$this->getLang('Plugin_social').'Plugin_social'));
-            html_form('',$form);
-            echo '</div>';
-        }else{
-
+            $form->addHidden('id', $ID);
+            $form->addHidden('do', 'social_form');
+            $form->addElement(form_makeButton('submit', null, $this->getLang('Plugin_social') . 'Plugin_social'));
+            // html_form('',$form);
+            $html .= '</div>';
+            return $html;
+        } else {
             return;
         }
-    }
+    }*/
 
     public function tplMetaDataForm(Doku_Event &$event) {
-      
-        if($event->data !='social_form'){
-            return ;
+        if ($event->data != 'social') {
+            return;
+        }
+
+        global $INPUT;
+        if ($INPUT->param('social')['do'] !== 'edit') {
+            return;
         }
         global $ID;
-        echo '<div class="plugin_social">';
-        echo '<div class="form" id="pluginsocialform" >';
-        $form = new Doku_Form(array());
-        $form->addHidden('target','plugin_social');
-        $form->addHidden('id',$ID);
-        $form->addHidden('do','social_save');
+        $form = new \dokuwiki\Form\Form();
+        $form->setHiddenField('target', 'plugin_social');
+        $form->setHiddenField('id', $ID);
+        $form->setHiddenField('do', 'social');
+        $form->setHiddenField('social[do]', 'save');
+
         foreach (helper_plugin_social_meta::$metaEditableKeys as $type => $values) {
-            $form->addElement('<div>');
-            $form->startFieldset($type);
+            $form->addFieldsetOpen($type);
             foreach ($values as $value) {
-  
+                $form->addTagOpen('div')->addClass('form-group');
                 $metadata = $this->helper->meta->getMetaData();
-                $name = $this->helper->meta->getMetaPropertyName($type,$value);
-                $form->addElement(form_makeTextField($name,$metadata[$name],$name,null,'block'));
+                $name = $this->helper->meta->getMetaPropertyName($type, $value);
+                $form->addTextInput($name, $name)->attr('class', 'form-control')->val($metadata[$name]);
+                $form->addTagClose('div');
             }
-            $form->endFieldset();
-
-            $form->addElement('</div>');
+            $form->addFieldsetClose();
         }
-
-        $form->addElement(form_makeButton('submit',null,$this->getLang('btnSave')));
-        html_form('',$form);
-        echo '</div>';
-        echo '</div>';
-
-
+        $form->addButton('submit', $this->getLang('btnSave'))->addClass('btn btn-success');
+        echo $form->toHTML();
         $event->preventDefault();
     }
-    
 
-    public function SaveMeta($event) {
+    private function saveMeta($event) {
         global $INPUT;
-        if(!checkSecurityToken()){
+        if (!checkSecurityToken()) {
             $event->data = 'show';
             return;
         }
-
-        if($this->helper->meta->CanSaveMeta()){
-
-            $metadata = array();
-
+        if ($this->helper->meta->canSaveMeta()) {
+            $metadata = [];
             foreach (helper_plugin_social_meta::$metaKeys as $type => $values) {
                 foreach ($values as $value) {
-                    $name = $this->helper->meta->getMetaPropertyName($type,$value);
+                    $name = $this->helper->meta->getMetaPropertyName($type, $value);
                     $metadata[$name] = $INPUT->str($name);
                 }
             }
             $json = new JSON;
             $c = $json->encode($metadata);
-
-
-            $metafile = $this->helper->meta->GetMetaFile();
-            io_saveFile($metafile,$c);
-            msg('Metadata saved',1);
+            $metaFile = $this->helper->meta->getMetaFile();
+            io_saveFile($metaFile, $c);
+            msg('Metadata saved', 1);
             $event->data = 'show';
         }
     }
 
-    public function RenderMeta(Doku_Event &$event) {
+    public function renderMeta(Doku_Event &$event) {
         global $ID;
-        $metadata = $this->helper->meta->getMetaData();
-        $storemetadata = $this->helper->meta->ReadMetaStorage();
+        $metaData = $this->helper->meta->getMetaData();
+        // $storeMetaData = $this->helper->meta->readMetaStorage();
 
         foreach (helper_plugin_social_meta::$metaKeys as $type => $values) {
             foreach ($values as $value) {
-                $name = $this->helper->meta->getMetaPropertyName($type,$value);
+                $name = $this->helper->meta->getMetaPropertyName($type, $value);
+                /*
+                                if (!$metaData[$name]) {
+                                    $event->data['meta'][] = ['property' => $name, 'content' => $storeMetaData[$name]];
+                                    continue;
+                                }*/
 
-                if($storemetadata[$name] != null){
-                    $event->data['meta'][] = array('property' => $name,'content' => $storemetadata[$name]);
-                    continue;
-                }
-
-                if($metadata[$name] != null){
-                    if($name=='og:image'){
-                        $metadata[$name]=ml($metadata[$name],null,true,'&',true);
+                if ($metaData[$name] != null) {
+                    if ($name == 'og:image') {
+                        $metadata[$name] = ml($metaData[$name], null, true, '&', true);
                     }
-                    $event->data['meta'][] = array('property' => $name,'content' => $metadata[$name]);
+                    $event->data['meta'][] = ['property' => $name, 'content' => $metaData[$name]];
                     continue;
                 }
                 switch ($name) {
                     case 'og:url':
-                        $event->data['meta'][] = array('property' => $name,'content' => wl($ID,null,true,'&'));
+                        $event->data['meta'][] = ['property' => $name, 'content' => wl($ID, null, true, '&')];
                         break;
                     case 'og:title':
-                        $event->data['meta'][] = array('property' => $name,'content' => p_get_first_heading($ID));
+                        $event->data['meta'][] = ['property' => $name, 'content' => p_get_first_heading($ID)];
                         break;
                     case 'og:site_name':
-                        $event->data['meta'][] = array('property' => $name,'content' => 'FYKOS');
+                        $event->data['meta'][] = ['property' => $name, 'content' => 'FYKOS'];
                         break;
-                  
                     case 'og:type':
-                        $event->data['meta'][] = array('property' => $name,'content' => 'website');
+                        $event->data['meta'][] = ['property' => $name, 'content' => 'website'];
                         break;
                     default :
-                        //$event->data['meta'][] = array('property' => $name,'content' => $this->getConf($name));
                         break;
                 }
             }
         }
     }
-
 }

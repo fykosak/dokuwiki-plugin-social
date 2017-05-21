@@ -10,8 +10,13 @@ require 'inc/whatsapp.php';
 require 'inc/meta.php';
 
 class helper_plugin_social extends DokuWiki_Plugin {
-
+    /**
+     * @var helper_plugin_social_facebook
+     */
     public $facebook;
+    /**
+     * @var helper_plugin_social_meta
+     */
     public $meta;
 
     public function __construct() {
