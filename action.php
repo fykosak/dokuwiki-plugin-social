@@ -150,7 +150,7 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
 
                 if ($metaData[$name] != null) {
                     if ($name == 'og:image') {
-                        $metadata[$name] = ml($metaData[$name], null, true, '&', true);
+                        $metaData[$name] = ml($metaData[$name], null, true, '&', true);
                     }
                     $event->data['meta'][] = ['property' => $name, 'content' => $metaData[$name]];
                     continue;
