@@ -42,7 +42,7 @@ window.PluginSocial = new (function () {
     jQuery.getScript('//connect.facebook.net/cs_CZ/sdk.js', () => {
         FB.init({
             status: true,
-            appId: '180514955816293',
+            appId: '911280978986775',
             xfbml: true,
             version: 'v2.7'
         });
