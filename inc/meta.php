@@ -1,21 +1,18 @@
 <?php
 
-/**
- * Description of sction
- *
- * @author Miso <miso@fykos.cz>
- */
-class helper_plugin_social_meta extends DokuWiki_Plugin {
+namespace pluginSocial;
+
+class Meta extends \DokuWiki_Plugin {
 
     private $metadata;
-    public $helper;
-    public static $FBmeta = array(/* 'url','locale', */
-                                  'title',
-                                  'description',
-                                  'site_name',
-                                  'image',
-                                  'type'
-    );
+
+    public static $FBmeta = [/* 'url','locale', */
+        'title',
+        'description',
+        'site_name',
+        'image',
+        'type'
+    ];
     public static $metaKeys = [
         'og' => [
             'url',
@@ -35,7 +32,7 @@ class helper_plugin_social_meta extends DokuWiki_Plugin {
             'image',
             'type',
             'locale',
-        ]
+        ],
     ];
 
     public function __construct() {

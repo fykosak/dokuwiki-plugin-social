@@ -11,18 +11,21 @@ require 'inc/meta.php';
 
 class helper_plugin_social extends DokuWiki_Plugin {
     /**
-     * @var helper_plugin_social_facebook
+     * @var \pluginSocial\Facebook
      */
     public $facebook;
     /**
-     * @var helper_plugin_social_meta
+     * @var \pluginSocial\Meta
      */
     public $meta;
+    /**
+     * @var \pluginSocial\Whatsapp
+     */
+    public $whatsapp;
 
     public function __construct() {
-        $this->facebook = new helper_plugin_social_facebook();
-        $this->whatsapp = new helper_plugin_social_whatsapp();
-        $this->meta = new helper_plugin_social_meta();
+        $this->facebook = new \pluginSocial\Facebook();
+        $this->whatsapp = new \pluginSocial\Whatsapp();
+        $this->meta = new \pluginSocial\Meta();
     }
-
 }
