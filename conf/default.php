@@ -1,4 +1,3 @@
 <?php
 
-$conf['default_image'] = "";
-$conf['default_text'] = "";
+$conf['fb_app_id'] = '';

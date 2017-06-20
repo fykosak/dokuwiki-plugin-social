@@ -1,4 +1,4 @@
 <?php
 
-$meta['default_image'] = ['string'];
-$meta['default_text'] = [];
+$meta['fb_app_id'] = ['string'];
+
