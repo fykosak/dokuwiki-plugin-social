@@ -2,27 +2,25 @@ jQuery.ajaxSetup({cache: true});
 
 window.PluginSocial = new (function () {
     "use strict";
-    let $ = jQuery;
-
     this.inicialized = false;
 
-    const parseFBAbstract = ($button) => {
-        if ($button.is(':disabled')) {
-            $button.prop('disabled', false);
-            $button.click(() => {
-                FB.ui($button.data());
+    const parseFBAbstract = (element) => {
+        if (element.disabled) {
+            element.disabled = false;
+            element.addEventListener("click", () => {
+                FB.ui({...element.dataset});
             });
         }
     };
     const parseFBShare = () => {
-        $('.plugin-social.fb.share').each(function () {
-            parseFBAbstract($(this));
+        document.querySelectorAll('.plugin-social.fb.share').forEach((element) => {
+            parseFBAbstract(element);
         });
     };
 
     const parseFBSend = () => {
-        $('.plugin-social.fb.send').each(function () {
-            parseFBAbstract($(this));
+        document.querySelectorAll('.plugin-social.fb.send').forEach((element) => {
+            parseFBAbstract(element);
         });
     };
 
