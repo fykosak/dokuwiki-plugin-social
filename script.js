@@ -1,3 +1,4 @@
+/* global FB, JSINFO */
 jQuery.ajaxSetup({cache: true});
 
 window.PluginSocial = new (function () {

@@ -1,8 +1,8 @@
 <?php
 
-namespace pluginSocial;
+namespace PluginSocial;
 
-class Meta extends \DokuWiki_Plugin {
+class Meta {
 
     private $metadata;
 

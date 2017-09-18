@@ -1,8 +1,8 @@
 <?php
 
-namespace pluginSocial;
+namespace PluginSocial;
 
-class Facebook extends \DokuWiki_Plugin {
+class Facebook {
 
     public function parseMatch($match) {
         preg_match('/{{FB-([a-z]*)>\s*(\S*)\s*(.*)}}/', $match, $matches);
@@ -49,8 +49,21 @@ class Facebook extends \DokuWiki_Plugin {
             '<i class="fa fa-facebook"></i> Share</button>';
     }
 
-    public function createPage($data) {
-
+    public function createPage($href, $hideCover = false, $showFacepile = false) {
+        return '<div class="fb-page" 
+  data-tabs="timeline"
+  data-href="https://www.facebook.com/' . htmlspecialchars($href) . '"
+  data-hide-cover="' . ($hideCover ? 'true' : 'false') . '"
+  data-show-facepile="' . ($showFacepile ? 'true' : 'false') . '"
+  ></div>';
     }
 
+    public function createComment($href, $noPost = 5) {
+        return '<div class="fb-comments" ' .
+            'data-href="' . $href . '" ' .
+            'data-numposts="' . $noPost . '" ' .
+            'data-colorscheme="light" ' .
+            'data-width="100%"' .
+            '></div>';
+    }
 }

@@ -1,7 +1,7 @@
 <?php
 
 use \dokuwiki\Form\Form;
-use \pluginSocial\Meta;
+use \PluginSocial\Meta;
 
 class action_plugin_social extends DokuWiki_Action_Plugin {
     /**
@@ -54,7 +54,7 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         if ($this->helper->meta->canSaveMeta()) {
             $event->data['items']['social_form'] = '<a class="dropdown-item" href="' .
                 wl($ID, ['do' => 'social', 'social[do]' => 'edit']) . '" >
-                    ' . $this->getLang('Plugin_social') . 'Plugin_social' . '</a>';
+                    ' . $this->getLang('Plugin_social') . '</a>';
         }
     }
 
@@ -115,6 +115,9 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
 
     public function renderMeta(Doku_Event &$event) {
         global $ID;
+        // add FB_APP_ID
+        $event->data['meta'][] = ['property' => 'fb:app_id', 'content' => $this->getConf('fb_app_id')];
+
         $metaData = $this->helper->meta->getMetaData();
         $storeMetaData = $this->helper->meta->readMetaStorage();
         $data = array_merge($metaData, $storeMetaData);

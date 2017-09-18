@@ -3,7 +3,7 @@
 /**
  * Description of helper
  *
- * @author root
+ * @author Michal Červeńák <miso@fyko.cz>
  */
 require 'inc/facebook.php';
 require 'inc/whatsapp.php';
@@ -11,21 +11,21 @@ require 'inc/meta.php';
 
 class helper_plugin_social extends DokuWiki_Plugin {
     /**
-     * @var \pluginSocial\Facebook
+     * @var \PluginSocial\Facebook
      */
     public $facebook;
     /**
-     * @var \pluginSocial\Meta
+     * @var \PluginSocial\Meta
      */
     public $meta;
     /**
-     * @var \pluginSocial\Whatsapp
+     * @var \PluginSocial\Whatsapp
      */
     public $whatsapp;
 
     public function __construct() {
-        $this->facebook = new \pluginSocial\Facebook();
-        $this->whatsapp = new \pluginSocial\Whatsapp();
-        $this->meta = new \pluginSocial\Meta();
+        $this->facebook = new \PluginSocial\Facebook();
+        $this->whatsapp = new \PluginSocial\Whatsapp();
+        $this->meta = new \PluginSocial\Meta();
     }
 }

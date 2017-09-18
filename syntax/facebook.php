@@ -59,14 +59,16 @@ class syntax_plugin_social_facebook extends DokuWiki_Syntax_Plugin {
                         $renderer->doc .= $this->helper->facebook->createShare($href);
                         break;
                     case 'page':
-                        //  $renderer->doc.= $this->helper->facebook->{'Create'.$param['class']}($param['href'],$param['width']);
-                        msg('Plugin social: FB component not implement', -1);
+                        $renderer->doc .= $this->helper->facebook->createPage($href);
                         break;
 
                     case 'wrap':
                         $renderer->doc .= '<div class="plugin_social fb_wrap">';
                         $renderer->doc .= $this->helper->facebook->createWrap($href);
                         $renderer->doc .= '</div>';
+                        break;
+                    case 'comment':
+                        $renderer->doc .= $this->helper->facebook->createComment($href);
                         break;
                     default :
                         msg('Plugin social: FB component not match', -1);
