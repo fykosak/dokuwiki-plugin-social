@@ -28,7 +28,12 @@ window.PluginSocial = new (function () {
     const parseFB = () => {
         parseFBShare();
         parseFBSend();
-        FB.XFBML.parse();
+        try {
+            FB.XFBML.parse();
+        }
+        catch (e) {
+            console.error(e);
+        }
     };
 
     this.parse = () => {
@@ -37,16 +42,17 @@ window.PluginSocial = new (function () {
         }
         parseFB();
     };
-
-    jQuery.getScript('//connect.facebook.net/cs_CZ/sdk.js', () => {
-        FB.init({
-            status: true,
-            appId: JSINFO.FBAppID,
-            xfbml: true,
-            version: 'v2.7'
+    document.addEventListener('DOMContentLoaded', () => {
+        jQuery.getScript('//connect.facebook.net/cs_CZ/sdk.js', () => {
+            FB.init({
+                status: true,
+                appId: JSINFO.FBAppID,
+                xfbml: true,
+                version: 'v2.7'
+            });
+            this.inicialized = true;
+            this.parse();
         });
-        this.inicialized = true;
-        this.parse();
     });
 
 })();

@@ -14,14 +14,14 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
     }
 
     public function register(Doku_Event_Handler $controller) {
-        $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addFBAppID');
+        $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addFBAppId');
         $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'renderMeta');
         $controller->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'tplMetaDataForm');
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'actPreprocessMeta');
         $controller->register_hook('TEMPLATE_PAGETOOLS_DISPLAY', 'BEFORE', $this, 'tplMetaDataMenuButton');
     }
 
-    public function addFBAppID() {
+    public function addFBAppId() {
         global $JSINFO;
         $JSINFO['FBAppID'] = $this->getConf('fb_app_id');
     }
