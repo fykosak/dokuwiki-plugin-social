@@ -1,19 +1,23 @@
 <?php
 
+use dokuwiki\Extension\Event;
+use dokuwiki\Extension\EventHandler;
 use \dokuwiki\Form\Form;
-use \PluginSocial\Meta;
+use FYKOS\dokuwiki\Extenstion\PluginSocial\OpenGraphData;
 
+/**
+ * Class action_plugin_social
+ * @author Michal Červeňák <miso@fykos.cz>
+ */
 class action_plugin_social extends DokuWiki_Action_Plugin {
-    /**
-     * @var helper_plugin_social
-     */
-    private $helper;
+
+    public OpenGraphData $openGraphData;
 
     public function __construct() {
-        $this->helper = $this->loadHelper('social');
+        $this->openGraphData = new OpenGraphData();
     }
 
-    public function register(Doku_Event_Handler $controller) {
+    public function register(EventHandler $controller): void {
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addFBAppId');
         $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'renderMeta');
         $controller->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'tplMetaDataForm');
@@ -21,16 +25,11 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         $controller->register_hook('TEMPLATE_PAGETOOLS_DISPLAY', 'BEFORE', $this, 'tplMetaDataMenuButton');
     }
 
-    public function addFBAppId() {
-        global $JSINFO;
-        $JSINFO['FBAppID'] = $this->getConf('fb_app_id');
-    }
-
-    public function actPreprocessMeta(Doku_Event &$event) {
+    public function actPreprocessMeta(Doku_Event $event): void {
         global $INPUT;
         $act = $event->data;
 
-        if (!$this->helper->meta->canSaveMeta()) {
+        if (!$this->openGraphData->canSaveMeta()) {
             return;
         }
         if ($act !== 'social') {
@@ -49,16 +48,16 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         }
     }
 
-    public function tplMetaDataMenuButton(Doku_Event &$event) {
+    public function tplMetaDataMenuButton(Event $event): void {
         global $ID;
-        if ($this->helper->meta->canSaveMeta()) {
+        if ($this->openGraphData->canSaveMeta()) {
             $event->data['items']['social_form'] = '<a class="dropdown-item" href="' .
                 wl($ID, ['do' => 'social', 'social[do]' => 'edit']) . '" >
                     ' . $this->getLang('Plugin_social') . '</a>';
         }
     }
 
-    public function tplMetaDataForm(Doku_Event &$event) {
+    public function tplMetaDataForm(Event $event): void {
         if ($event->data != 'social') {
             return;
         }
@@ -74,12 +73,12 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         $form->setHiddenField('do', 'social');
         $form->setHiddenField('social[do]', 'save');
 
-        foreach (Meta::$metaEditableKeys as $type => $values) {
+        foreach (OpenGraphData::$metaEditableKeys as $type => $values) {
             $form->addFieldsetOpen($type);
             foreach ($values as $value) {
                 $form->addTagOpen('div')->addClass('form-group');
-                $metadata = $this->helper->meta->getMetaData();
-                $name = $this->helper->meta->getMetaPropertyName($type, $value);
+                $metadata = $this->openGraphData->getMetaData();
+                $name = $this->openGraphData->getMetaPropertyName($type, $value);
                 $form->addTextInput($name, $name)->attr('class', 'form-control')->val($metadata[$name]);
                 $form->addTagClose('div');
             }
@@ -90,41 +89,40 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         $event->preventDefault();
     }
 
-    private function saveMeta($event) {
+    private function saveMeta(Event $event): void {
         global $INPUT;
         if (!checkSecurityToken()) {
             $event->data = 'show';
             return;
         }
-        if ($this->helper->meta->canSaveMeta()) {
+        if ($this->openGraphData->canSaveMeta()) {
             $metadata = [];
-            foreach (Meta::$metaKeys as $type => $values) {
+            foreach (OpenGraphData::$metaKeys as $type => $values) {
                 foreach ($values as $value) {
-                    $name = $this->helper->meta->getMetaPropertyName($type, $value);
+                    $name = $this->openGraphData->getMetaPropertyName($type, $value);
                     $metadata[$name] = $INPUT->str($name);
                 }
             }
-            $json = new JSON;
-            $content = $json->encode($metadata);
-            $metaFile = $this->helper->meta->getMetaFile();
+            $content = json_encode($metadata);
+            $metaFile = $this->openGraphData->getMetaFile();
             io_saveFile($metaFile, $content);
             msg('Metadata saved', 1);
             $event->data = 'show';
         }
     }
 
-    public function renderMeta(Doku_Event &$event) {
+    public function renderMeta(Event $event): void {
         global $ID;
         // add FB_APP_ID
         $event->data['meta'][] = ['property' => 'fb:app_id', 'content' => $this->getConf('fb_app_id')];
 
-        $metaData = $this->helper->meta->getMetaData();
-        $storeMetaData = $this->helper->meta->readMetaStorage();
+        $metaData = $this->openGraphData->getMetaData();
+        $storeMetaData = $this->openGraphData->readMetaStorage();
         $data = array_merge($metaData, $storeMetaData);
 
-        foreach (Meta::$metaKeys as $type => $values) {
+        foreach (OpenGraphData::$metaKeys as $type => $values) {
             foreach ($values as $value) {
-                $name = $this->helper->meta->getMetaPropertyName($type, $value);
+                $name = $this->openGraphData->getMetaPropertyName($type, $value);
 
                 if ($data[$name]) {
                     $event->data['meta'][] = ['property' => $name, 'content' => $data[$name]];
