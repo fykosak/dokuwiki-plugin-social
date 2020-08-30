@@ -20,7 +20,6 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
     }
 
     public function register(EventHandler $controller): void {
-        $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addFBAppId');
         $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'renderMeta');
         $controller->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'tplMetaDataForm');
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'actPreprocessMeta');
