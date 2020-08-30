@@ -5,6 +5,8 @@ use dokuwiki\Extension\EventHandler;
 use \dokuwiki\Form\Form;
 use FYKOS\dokuwiki\Extenstion\PluginSocial\OpenGraphData;
 
+require_once __DIR__ . '/inc/OpenGraphData.php';
+
 /**
  * Class action_plugin_social
  * @author Michal Červeňák <miso@fykos.cz>
