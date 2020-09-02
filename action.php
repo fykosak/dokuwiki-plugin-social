@@ -2,10 +2,12 @@
 
 use dokuwiki\Extension\Event;
 use dokuwiki\Extension\EventHandler;
-use \dokuwiki\Form\Form;
+use dokuwiki\Form\Form;
+use FYKOS\dokuwiki\Extenstion\PluginSocial\MenuButton;
 use FYKOS\dokuwiki\Extenstion\PluginSocial\OpenGraphData;
 
 require_once __DIR__ . '/inc/OpenGraphData.php';
+require_once __DIR__ . '/inc/MenuButton.php';
 
 /**
  * Class action_plugin_social
@@ -23,7 +25,7 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'renderMeta');
         $controller->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'tplMetaDataForm');
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'actPreprocessMeta');
-        $controller->register_hook('TEMPLATE_PAGETOOLS_DISPLAY', 'BEFORE', $this, 'tplMetaDataMenuButton');
+        $controller->register_hook('MENU_ITEMS_ASSEMBLY', 'BEFORE', $this, 'tplMetaDataMenuButton');
     }
 
     public function actPreprocessMeta(Doku_Event $event): void {
@@ -50,11 +52,8 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
     }
 
     public function tplMetaDataMenuButton(Event $event): void {
-        global $ID;
-        if ($this->openGraphData->canSaveMeta()) {
-            $event->data['items']['social_form'] = '<a class="dropdown-item" href="' .
-                wl($ID, ['do' => 'social', 'social[do]' => 'edit']) . '" >
-                    ' . $this->getLang('Plugin_social') . '</a>';
+        if ($event->data['view'] === 'page' && $this->openGraphData->canSaveMeta()) {
+            $event->data['items'][] = new MenuButton();
         }
     }
 
