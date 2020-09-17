@@ -1,6 +1,6 @@
 <?php
 
-namespace FYKOS\dokuwiki\Extenstion\PluginSocial;
+namespace FYKOS\dokuwiki\Extension\PluginSocial;
 /**
  * Class OpenGraphData
  * @author Michal Červeňák <miso@fykos.cz>
@@ -68,13 +68,12 @@ class OpenGraphData {
         return (array)$metaData;
     }
 
-    public function readMeta(string $metaFile): array {
-        $content = io_readFile($metaFile);
-        return (array)json_decode($content);
-    }
-
     public function getMetaPropertyName(string $type, string $value): string {
         return $type . ':' . $value;
     }
 
+    private function readMeta(string $metaFile): array {
+        $content = io_readFile($metaFile);
+        return (array)json_decode($content);
+    }
 }

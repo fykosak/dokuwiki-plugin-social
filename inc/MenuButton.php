@@ -1,6 +1,6 @@
 <?php
 
-namespace FYKOS\dokuwiki\Extenstion\PluginSocial;
+namespace FYKOS\dokuwiki\Extension\PluginSocial;
 
 use dokuwiki\Menu\Item\AbstractItem;
 

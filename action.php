@@ -1,10 +1,11 @@
 <?php
 
+use dokuwiki\Extension\ActionPlugin;
 use dokuwiki\Extension\Event;
 use dokuwiki\Extension\EventHandler;
 use dokuwiki\Form\Form;
-use FYKOS\dokuwiki\Extenstion\PluginSocial\MenuButton;
-use FYKOS\dokuwiki\Extenstion\PluginSocial\OpenGraphData;
+use FYKOS\dokuwiki\Extension\PluginSocial\MenuButton;
+use FYKOS\dokuwiki\Extension\PluginSocial\OpenGraphData;
 
 require_once __DIR__ . '/inc/OpenGraphData.php';
 require_once __DIR__ . '/inc/MenuButton.php';
@@ -13,7 +14,9 @@ require_once __DIR__ . '/inc/MenuButton.php';
  * Class action_plugin_social
  * @author Michal Červeňák <miso@fykos.cz>
  */
-class action_plugin_social extends DokuWiki_Action_Plugin {
+class action_plugin_social extends ActionPlugin {
+
+    private const ACTION_PARAM = 'social';
 
     public OpenGraphData $openGraphData;
 
@@ -28,26 +31,22 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
         $controller->register_hook('MENU_ITEMS_ASSEMBLY', 'BEFORE', $this, 'tplMetaDataMenuButton');
     }
 
-    public function actPreprocessMeta(Doku_Event $event): void {
+    public function actPreprocessMeta(Event $event): void {
         global $INPUT;
         $act = $event->data;
 
         if (!$this->openGraphData->canSaveMeta()) {
             return;
         }
-        if ($act !== 'social') {
+        if ($act !== self::ACTION_PARAM) {
             return;
         }
         $event->preventDefault();
         $event->stopPropagation();
 
-        switch ($INPUT->param('social')['do']) {
+        switch ($INPUT->param(self::ACTION_PARAM)['do']) {
             case 'save':
                 $this->saveMeta($event);
-                break;
-            case 'edit':
-            default:
-                return;
         }
     }
 
@@ -58,20 +57,20 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
     }
 
     public function tplMetaDataForm(Event $event): void {
-        if ($event->data != 'social') {
+        if ($event->data !== self::ACTION_PARAM) {
             return;
         }
 
         global $INPUT;
-        if ($INPUT->param('social')['do'] !== 'edit') {
+        if ($INPUT->param(self::ACTION_PARAM)['do'] !== 'edit') {
             return;
         }
         global $ID;
         $form = new Form();
         $form->setHiddenField('target', 'plugin_social');
         $form->setHiddenField('id', $ID);
-        $form->setHiddenField('do', 'social');
-        $form->setHiddenField('social[do]', 'save');
+        $form->setHiddenField('do', self::ACTION_PARAM);
+        $form->setHiddenField(self::ACTION_PARAM . '[do]', 'save');
 
         foreach (OpenGraphData::$metaEditableKeys as $type => $values) {
             $form->addFieldsetOpen($type);
@@ -114,7 +113,7 @@ class action_plugin_social extends DokuWiki_Action_Plugin {
     public function renderMeta(Event $event): void {
         global $ID;
         // add FB_APP_ID
-        $event->data['meta'][] = ['property' => 'fb:app_id', 'content' => $this->getConf('fb_app_id')];
+        // $event->data['meta'][] = ['property' => 'fb:app_id', 'content' => $this->getConf('fb_app_id')];
 
         $metaData = $this->openGraphData->getMetaData();
         $storeMetaData = $this->openGraphData->readMetaStorage();
