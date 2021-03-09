@@ -7,16 +7,16 @@ namespace FYKOS\dokuwiki\Extension\PluginSocial;
  */
 class OpenGraphData {
 
-    private array $metadata;
+    private $metadata;
 
-    public static array $FBmeta = [/* 'url','locale', */
+    public static $FBmeta = [/* 'url','locale', */
         'title',
         'description',
         'site_name',
         'image',
         'type',
     ];
-    public static array $metaKeys = [
+    public static $metaKeys = [
         'og' => [
             'url',
             'title',
@@ -27,7 +27,7 @@ class OpenGraphData {
             'locale',
         ],
     ];
-    public static array $metaEditableKeys = [
+    public static $metaEditableKeys = [
         'og' => [
             'title',
             'description',

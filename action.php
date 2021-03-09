@@ -18,7 +18,7 @@ class action_plugin_social extends ActionPlugin {
 
     private const ACTION_PARAM = 'social';
 
-    public OpenGraphData $openGraphData;
+    public $openGraphData;
 
     public function __construct() {
         $this->openGraphData = new OpenGraphData();
