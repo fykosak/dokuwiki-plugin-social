@@ -1,19 +1,22 @@
 <?php
 
-namespace PluginSocial;
+namespace FYKOS\dokuwiki\Extension\PluginSocial;
+/**
+ * Class OpenGraphData
+ * @author Michal Červeňák <miso@fykos.cz>
+ */
+class OpenGraphData {
 
-class Meta {
+    private array $metadata;
 
-    private $metadata;
-
-    public static $FBmeta = [/* 'url','locale', */
+    public static array $FBmeta = [/* 'url','locale', */
         'title',
         'description',
         'site_name',
         'image',
-        'type'
+        'type',
     ];
-    public static $metaKeys = [
+    public static array $metaKeys = [
         'og' => [
             'url',
             'title',
@@ -22,9 +25,9 @@ class Meta {
             'image',
             'type',
             'locale',
-        ]
+        ],
     ];
-    public static $metaEditableKeys = [
+    public static array $metaEditableKeys = [
         'og' => [
             'title',
             'description',
@@ -39,39 +42,38 @@ class Meta {
         $this->metadata = [];
     }
 
-    public function readMetaStorage() {
+    public function readMetaStorage(): array {
         return $this->metadata;
     }
 
-    public function addMetaData($type, $key, $value) {
+    public function addMetaData(string $type, string $key, ?string $value): bool {
         $name = $this->getMetaPropertyName($type, $key);
         $this->metadata[$name] = $value;
         return true;
     }
 
-    public function canSaveMeta() {
+    public function canSaveMeta(): bool {
         global $ID;
         return (auth_quickaclcheck($ID) >= AUTH_EDIT);
     }
 
-    public function getMetaFile() {
+    public function getMetaFile(): string {
         global $ID;
         return metaFN($ID, '.meta.social');
     }
 
-    public function getMetaData() {
+    public function getMetaData(): array {
         $metaFile = $this->getMetaFile();
         $metaData = $this->readMeta($metaFile);
         return (array)$metaData;
     }
 
-    public function readMeta($metaFile) {
-        $content = io_readFile($metaFile);
-        return (array)json_decode($content);
-    }
-
-    public function getMetaPropertyName($type, $value) {
+    public function getMetaPropertyName(string $type, string $value): string {
         return $type . ':' . $value;
     }
 
+    private function readMeta(string $metaFile): array {
+        $content = io_readFile($metaFile);
+        return (array)json_decode($content);
+    }
 }
