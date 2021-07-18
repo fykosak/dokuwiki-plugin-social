@@ -135,7 +135,7 @@ class action_plugin_social extends ActionPlugin {
                         $event->data['meta'][] = ['property' => $name, 'content' => p_get_first_heading($ID)];
                         break;
                     case 'og:site_name':
-                        $event->data['meta'][] = ['property' => $name, 'content' => 'FYKOS'];
+                        $event->data['meta'][] = ['property' => $name, 'content' => 'Výfuk'];
                         break;
                     case 'og:type':
                         $event->data['meta'][] = ['property' => $name, 'content' => 'website'];
