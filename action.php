@@ -123,7 +123,7 @@ class action_plugin_social extends ActionPlugin {
             foreach ($values as $value) {
                 $name = $this->openGraphData->getMetaPropertyName($type, $value);
 
-                if ($data[$name]) {
+                if (isset($data[$name])) {
                     $event->data['meta'][] = ['property' => $name, 'content' => $data[$name]];
                     continue;
                 }
